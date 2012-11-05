@@ -1,7 +1,7 @@
 #include "ImplantedDiamond.h"
 
-ImplantedDiamond::ImplantedDiamond(double fluence)
-  : _fluence(fluence)
+ImplantedDiamond::ImplantedDiamond(DiamondModelInterface *model, double fluence)
+  : _model(model), _fluence(fluence)
 { }
 
 double ImplantedDiamond::smallest_feature() const
@@ -21,22 +21,22 @@ double ImplantedDiamond::speed_of_sound(double z) const
 
 double ImplantedDiamond::dndeta(double z, double lambda) const
 {
-  return 0.0;
+  return _model->dndeta(VacancyConcentration(z));
 }
 
 double ImplantedDiamond::dkappadeta(double z, double lambda) const
 {
-  return 0.0;
+  return _model->dkappadeta(VacancyConcentration(z));
 }
 
 double ImplantedDiamond::n(double z, double lambda) const
 {
-  return 2.4;
+  return _model->n(VacancyConcentration(z));
 }
 
 double ImplantedDiamond::kappa(double z, double lambda) const
 {
-  return 0.0;
+  return _model->kappa(VacancyConcentration(z));
 }
 
 void ImplantedDiamond::PrintCustomParameters(std::ostream & out, std::string tag) const
@@ -49,9 +49,13 @@ TransducingLayer ImplantedDiamond::transducing_layer() const
   return TransducingLayer();
 }
 
+double ImplantedDiamond::VacancyConcentration(double depth) const
+{
+  return 0.0;
+}
+
 CapMaterialInterface * ImplantedDiamond::clone() const
 {
   ImplantedDiamond * output = new ImplantedDiamond(_model, _fluence);
-  output->set_transducing_layer(_transducing_layer);
   return output;
 }

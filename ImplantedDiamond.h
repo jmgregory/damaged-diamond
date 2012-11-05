@@ -5,14 +5,18 @@
 #include <string>
 #include <tr1/unordered_map>
 #include "CapMaterialInterface.h"
+#include "DiamondModelInterface.h"
 
 class ImplantedDiamond : public CapMaterialInterface
 {
  private:
+  DiamondModelInterface *_model;
   double _fluence;
 
+  double VacancyConcentration(double depth) const;
+
  public:
-  ImplantedDiamond(double fluence);
+  ImplantedDiamond(DiamondModelInterface * model, double fluence);
 
   CapMaterialInterface * clone() const;
   
