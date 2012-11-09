@@ -12,14 +12,13 @@ TEST(ImaginaryIndex)
   CHECK_EQUAL(0.0, UndamagedDiamondModel().kappa(1e15));  
 }
 
-TEST(DNDEta)
+TEST(p12)
 {
-  CHECK_EQUAL(-0.221184, UndamagedDiamondModel().dndeta(0.0));
-  CHECK_EQUAL(-0.221184, UndamagedDiamondModel().dndeta(1e15));
+  CHECK_EQUAL(0.032, UndamagedDiamondModel().p12(0.0));
+  CHECK_EQUAL(0.032, UndamagedDiamondModel().p12(1e15));
 }
 
-TEST(DKappaDEta)
+TEST(Description)
 {
-  CHECK_EQUAL(0.0, UndamagedDiamondModel().dkappadeta(0.0));
-  CHECK_EQUAL(0.0, UndamagedDiamondModel().dkappadeta(1e15));  
+  CHECK(UndamagedDiamondModel().description().length() > 0);
 }

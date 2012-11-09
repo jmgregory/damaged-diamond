@@ -1,6 +1,6 @@
 #include "ImplantedDiamond.h"
 
-ImplantedDiamond::ImplantedDiamond(DiamondModelInterface *model, double fluence)
+ImplantedDiamond::ImplantedDiamond(DamageModelInterface *model, double fluence)
   : _model(model), _fluence(fluence)
 { }
 
@@ -19,14 +19,9 @@ double ImplantedDiamond::speed_of_sound(double z) const
   return 17520.0; // m/s
 }
 
-double ImplantedDiamond::dndeta(double z, double lambda) const
+double ImplantedDiamond::p12(double z, double lambda) const
 {
-  return _model->dndeta(VacancyConcentration(z));
-}
-
-double ImplantedDiamond::dkappadeta(double z, double lambda) const
-{
-  return _model->dkappadeta(VacancyConcentration(z));
+  return _model->p12(VacancyConcentration(z));
 }
 
 double ImplantedDiamond::n(double z, double lambda) const
@@ -37,6 +32,11 @@ double ImplantedDiamond::n(double z, double lambda) const
 double ImplantedDiamond::kappa(double z, double lambda) const
 {
   return _model->kappa(VacancyConcentration(z));
+}
+
+std::string ImplantedDiamond::description() const
+{
+  return std::string("Implanted diamond sample using damage model: ") + _model->description();
 }
 
 void ImplantedDiamond::PrintCustomParameters(std::ostream & out, std::string tag) const

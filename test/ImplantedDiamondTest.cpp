@@ -34,17 +34,18 @@ TEST_FIXTURE(ImplantedDiamondTestFixture, SpeedOfSound)
 TEST_FIXTURE(ImplantedDiamondTestFixture, IndexValues)
 {
   CHECK_EQUAL(2.4, unimplanted.n(0.0, 0.0));
-  CHECK_EQUAL(2.4, unimplanted.n(850e-9, 100e-9));
+  CHECK_EQUAL(2.4, unimplanted.n(100e-9, 850e-9));
+  CHECK_EQUAL(0.0, unimplanted.kappa(0.0, 0.0));
+  CHECK_EQUAL(0.0, unimplanted.kappa(100e-9, 850e-9));
+  CHECK_EQUAL(-0.221184, unimplanted.dndeta(0.0, 0.0));
+  CHECK_EQUAL(-0.221184, unimplanted.dndeta(100e-9, 850e-9));
+  CHECK_EQUAL(0.0, unimplanted.dkappadeta(0.0, 0.0));
+  CHECK_EQUAL(0.0, unimplanted.dkappadeta(100e-9, 850-9));
+}
 
-  double A = -6.01e-3;
-  double B = 3.03e-20; // cm3                                                                                                                              
-  double Vc = (2695.34E-05 * 1e8 * fluence);
-  std::cerr << Vc << std::endl;
-  std::cerr << B*Vc << std::endl;
-  std::cerr << log(B*Vc) << std::endl;
-  //CHECK_EQUAL(2.4 + (A * log(B * Vc)), implanted.n(1.72e-6, 0.0));
-
-  //CHECK_EQUAL(2.4, implanted.n(1.99e-6, 0.0));
+TEST_FIXTURE(ImplantedDiamondTestFixture, DescriptionProducesText)
+{
+  CHECK(unimplanted.description().length() > 0);
 }
 
 TEST_FIXTURE(ImplantedDiamondTestFixture, ParameterOutputProducesText)

@@ -18,6 +18,7 @@ CharacteristicMatrixTest: ../Matrix.o ../HomogeneousCharacteristicMatrix.o
 CapSimulationTest: ../TransducingLayer.o ../CharacteristicMatrix.o ../Matrix.o ../LaserBeam.o ../HomogeneousCharacteristicMatrix.o ../Exception.o ../CapMaterialInterface.o
 ../CapSimulation.o: ../DefaultCapMaterial.h ../CapMaterialInterface.h
 ThreadedCapSimulationRunnerTest: ../CapSimulation.o ../TransducingLayer.o ../CharacteristicMatrix.o ../Matrix.o ../LaserBeam.o ../HomogeneousCharacteristicMatrix.o ../Exception.o ../CapMaterialInterface.o
+ImplantedDiamondTest: ../CapMaterialInterface.o ../TransducingLayer.o
 
 stdafx.h.gch: stdafx.h
 	@g++ $(CPPFLAGS) -o $@ -c $^
