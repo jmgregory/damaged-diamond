@@ -8,10 +8,10 @@ struct ImplantedDiamondTestFixture
   ImplantedDiamondTestFixture() 
     : model(), fluence(1e10), implanted(ImplantedDiamond(&model, fluence)), unimplanted(ImplantedDiamond(&model, 0.0)) {}
   
+  UndamagedDiamondModel model;
   double fluence;
   ImplantedDiamond implanted;
   ImplantedDiamond unimplanted;
-  UndamagedDiamondModel model;
   std::stringstream string_stream;
 };
 
