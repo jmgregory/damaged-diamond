@@ -1,24 +1,29 @@
 #include "../UndamagedDiamondModel.h"
 
-TEST(RealIndex)
+struct UndamagedDiamondModelTestFixture
 {
-  CHECK_EQUAL(2.4, UndamagedDiamondModel().n(0.0));
-  CHECK_EQUAL(2.4, UndamagedDiamondModel().n(1e15));
+  UndamagedDiamondModel model;
+};
+
+TEST_FIXTURE(UndamagedDiamondModelTestFixture, RealIndex)
+{
+  CHECK_EQUAL(2.4, model.n(0.0));
+  CHECK_EQUAL(2.4, model.n(1e15));
 }
 
-TEST(ImaginaryIndex)
+TEST_FIXTURE(UndamagedDiamondModelTestFixture, ImaginaryIndex)
 {
-  CHECK_EQUAL(0.0, UndamagedDiamondModel().kappa(0.0));
-  CHECK_EQUAL(0.0, UndamagedDiamondModel().kappa(1e15));  
+  CHECK_EQUAL(0.0, model.kappa(0.0));
+  CHECK_EQUAL(0.0, model.kappa(1e15));  
 }
 
-TEST(p12)
+TEST_FIXTURE(UndamagedDiamondModelTestFixture, p12)
 {
-  CHECK_EQUAL(0.032, UndamagedDiamondModel().p12(0.0));
-  CHECK_EQUAL(0.032, UndamagedDiamondModel().p12(1e15));
+  CHECK_EQUAL(0.032, model.p12(0.0));
+  CHECK_EQUAL(0.032, model.p12(1e15));
 }
 
-TEST(Description)
+TEST_FIXTURE(UndamagedDiamondModelTestFixture, Description)
 {
-  CHECK(UndamagedDiamondModel().description().length() > 0);
+  CHECK(model.description().length() > 0);
 }
