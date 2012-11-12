@@ -1,4 +1,4 @@
-my_tests=UndamagedDiamondModelTest ImplantedDiamondTest CharacteristicMatrixTest ExceptionTest HomogeneousCharacteristicMatrixTest LaserBeamTest MatrixTest TransducingLayerTest CapSimulationTest ThreadedCapSimulationRunnerTest
+my_tests=TrimFileVacancyConcentrationCalculatorTest PreviousDamagedDiamondModelTest UndamagedDiamondModelTest ImplantedDiamondTest CharacteristicMatrixTest ExceptionTest HomogeneousCharacteristicMatrixTest LaserBeamTest MatrixTest TransducingLayerTest CapSimulationTest ThreadedCapSimulationRunnerTest
 
 LIBS=-lUnitTest++
 CPPFLAGS=-O0 -Wall -Winvalid-pch -I/opt/local/include/UnitTest++ -L/opt/local/lib

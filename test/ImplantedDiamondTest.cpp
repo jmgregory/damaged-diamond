@@ -2,13 +2,15 @@
 #include <UnitTest++.h>
 #include "../ImplantedDiamond.h"
 #include "../UndamagedDiamondModel.h"
+#include "../PreviousDamagedDiamondModel.h"
 
 struct ImplantedDiamondTestFixture
 {
   ImplantedDiamondTestFixture() 
-    : model(), fluence(1e10), implanted(ImplantedDiamond(&model, fluence)), unimplanted(ImplantedDiamond(&model, 0.0)) {}
+    : undamaged_model(), damaged_model(), fluence(1e10), implanted(ImplantedDiamond(&damaged_model, fluence)), unimplanted(ImplantedDiamond(&undamaged_model, 0.0)) {}
   
-  UndamagedDiamondModel model;
+  UndamagedDiamondModel undamaged_model;
+  PreviousDamagedDiamondModel damaged_model;
   double fluence;
   ImplantedDiamond implanted;
   ImplantedDiamond unimplanted;
