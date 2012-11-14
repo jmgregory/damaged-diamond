@@ -27,7 +27,7 @@ class PreviousDamagedDiamondModel : public DamageModelInterface
   {
     if (vacancy_concentration <= 1e21)
       {
-	return 2.0 / (2.4 * 2.4 * 2.4) * (1.0 - vacancy_concentration / 4.4e20);
+	return -2.0 / (2.4 * 2.4 * 2.4) * (1.0 - vacancy_concentration / 4.4e20);
       }
     return p12(1e21);
   }
