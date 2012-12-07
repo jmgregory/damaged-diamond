@@ -25,11 +25,11 @@ TEST_FIXTURE(PreviousDamagedDiamondModelTestFixture, ImaginaryIndex)
 
 TEST_FIXTURE(PreviousDamagedDiamondModelTestFixture, p12)
 {
-  CHECK_CLOSE( 0.1447, model.p12( 0.0), 1e-4);
-  CHECK_CLOSE( 0.1447, model.p12(1e14), 1e-4);
-  CHECK_CLOSE( 0.1446, model.p12(1e17), 1e-4);
-  CHECK_CLOSE( 0.1118, model.p12(1e20), 1e-4);
-  CHECK_CLOSE(-0.1841, model.p12(1e23), 1e-4);
+  CHECK_CLOSE(-0.1447, model.p12( 0.0), 1e-4);
+  CHECK_CLOSE(-0.1447, model.p12(1e14), 1e-4);
+  CHECK_CLOSE(-0.1446, model.p12(1e17), 1e-4);
+  CHECK_CLOSE(-0.1118, model.p12(1e20), 1e-4);
+  CHECK_CLOSE( 0.1841, model.p12(1e23), 1e-4);
 }
 
 TEST_FIXTURE(PreviousDamagedDiamondModelTestFixture, Description)
