@@ -4,14 +4,15 @@
 #include <getopt.h>
 #include "CapSimulation.h"
 #include "ThreadedCapSimulationRunner.h"
-#include "DefaultCapMaterial.h"
+#include "ImplantedDiamond.h"
+#include "PreviousDamagedDiamondModel.h"
 
 void print_data(const std::vector <CapPoint> & data, std::ostream & out = std::cout);
 
 int main(int argc, char *argv[])
 {
   double start_time = 0.0;
-  double stop_time = 100e-12;
+  double stop_time = 200e-12;
   double time_step = 0.25e-12;
 
   double reflectivity = 0.75;
@@ -22,6 +23,7 @@ int main(int argc, char *argv[])
   int c;
   static struct option long_options[] =
     {
+      {"fluence",      required_argument, 0, 'f'},
       {"start",        required_argument, 0, 's'},
       {"stop",         required_argument, 0, 'e'},
       {"step",         required_argument, 0, 'i'},
@@ -34,7 +36,7 @@ int main(int argc, char *argv[])
 
   while (1)
     {
-      c = getopt_long(argc, argv, "s:e:i:R:qt:", long_options, &option_index);
+      c = getopt_long(argc, argv, "f:s:e:i:R:qt:", long_options, &option_index);
       
       if (c == -1)
 	break;
@@ -47,6 +49,9 @@ int main(int argc, char *argv[])
 
       switch (c)
 	{
+	case 'f':
+	  ss >> fluence;
+	  break;
 	case 's':
 	  ss >> start_time;
 	  break;
@@ -70,7 +75,8 @@ int main(int argc, char *argv[])
 
 
   TransducingLayer transducing_layer(reflectivity, 7.6e-9, 0.91, 2.70, 0.334, 23e-6);
-  DefaultCapMaterial material;
+  PreviousDamagedDiamondModel model;
+  ImplantedDiamond material(&model, fluence);
   material.set_transducing_layer(transducing_layer);
   CapSimulation simulation;
   simulation.set_material(&material);
