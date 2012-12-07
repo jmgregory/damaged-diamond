@@ -7,12 +7,11 @@
 struct ImplantedDiamondTestFixture
 {
   ImplantedDiamondTestFixture() 
-    : undamaged_model(), damaged_model(), fluence(1e10), implanted(ImplantedDiamond(&damaged_model, fluence)), unimplanted(ImplantedDiamond(&undamaged_model, 0.0)) {}
+    : undamaged_model(), 
+      unimplanted(ImplantedDiamond(&undamaged_model, 0.0)) 
+  {}
   
   UndamagedDiamondModel undamaged_model;
-  PreviousDamagedDiamondModel damaged_model;
-  double fluence;
-  ImplantedDiamond implanted;
   ImplantedDiamond unimplanted;
   std::stringstream string_stream;
 };
@@ -24,13 +23,12 @@ TEST_FIXTURE(ImplantedDiamondTestFixture, SmallestFeature)
 
 TEST_FIXTURE(ImplantedDiamondTestFixture, MaxInterestingDepth)
 {
-  CHECK_EQUAL(2e-6, unimplanted.max_interesting_depth());
+  CHECK_EQUAL(3.51e-6, unimplanted.max_interesting_depth());
 }
 
 TEST_FIXTURE(ImplantedDiamondTestFixture, SpeedOfSound)
 {
   CHECK_EQUAL(17520.0, unimplanted.speed_of_sound(0.0));
-  CHECK_EQUAL(17520.0, implanted.speed_of_sound(900e-9));
 }
 
 TEST_FIXTURE(ImplantedDiamondTestFixture, IndexValues)
