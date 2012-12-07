@@ -10,7 +10,7 @@ TrimFileVacancyConcentrationCalculator::TrimFileVacancyConcentrationCalculator(s
   LoadFromFile();
 }
 
-std::string TrimFileVacancyConcentrationCalculator::description()
+std::string TrimFileVacancyConcentrationCalculator::description() const
 {
   return std::string("TRIM Vacancy Concentration loaded from ") + _filename;
 }
@@ -22,7 +22,7 @@ double TrimFileVacancyConcentrationCalculator::Interpolate(double x, double x1, 
   return slope * x + offset;
 }
 
-double TrimFileVacancyConcentrationCalculator::vacancy_concentration(double depth)
+double TrimFileVacancyConcentrationCalculator::vacancy_concentration(double depth) const
 {
   assert(!trim_points.empty());
   if (depth < 0.0) return 0.0;

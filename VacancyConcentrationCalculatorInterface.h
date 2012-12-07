@@ -6,8 +6,8 @@
 class VacancyConcentrationCalculatorInterface
 {
  public:
-  virtual double vacancy_concentration(double depth) = 0;
-  virtual std::string description() = 0;
+  virtual double vacancy_concentration(double depth) const = 0;
+  virtual std::string description() const = 0;
 };
 
 #endif

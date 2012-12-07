@@ -9,8 +9,8 @@ class TrimFileVacancyConcentrationCalculator : public VacancyConcentrationCalcul
 {
  public:
   TrimFileVacancyConcentrationCalculator(std::string filename, double fluence);
-  double vacancy_concentration(double depth);
-  std::string description();
+  double vacancy_concentration(double depth) const;
+  std::string description() const;
 
  private:
   double _fluence;

@@ -6,12 +6,14 @@
 #include <tr1/unordered_map>
 #include "CapMaterialInterface.h"
 #include "DamageModelInterface.h"
+#include "TrimFileVacancyConcentrationCalculator.h"
 
 class ImplantedDiamond : public CapMaterialInterface
 {
  private:
   DamageModelInterface *_model;
   double _fluence;
+  TrimFileVacancyConcentrationCalculator _trim_calculator;
 
   double VacancyConcentration(double depth) const;
   double p12(double z, double lambda) const;
