@@ -101,7 +101,7 @@ int main(int argc, char *argv[])
   if (model_name == "UNDAMAGED")
     model = new UndamagedDiamondModel(n, kappa, p12);
   else if (model_name == "LAGOMARSINO")
-    model = new LagomarsinoDamageModel();
+    model = new LagomarsinoDamageModel(n, kappa, p12);
   else
     {
       std::cerr << "Error: Unknown damage model: " << model_name << std::endl;
