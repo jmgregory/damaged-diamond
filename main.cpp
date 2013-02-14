@@ -5,14 +5,15 @@
 #include "CapSimulation.h"
 #include "ThreadedCapSimulationRunner.h"
 #include "ImplantedDiamond.h"
-#include "PreviousDamagedDiamondModel.h"
+#include "LagomarsinoDamageModel.h"
+#include "UndamagedDiamondModel.h"
 
 void print_data(const std::vector <CapPoint> & data, std::ostream & out = std::cout);
 
 int main(int argc, char *argv[])
 {
-  double start_time = 0.0;
-  double stop_time = 200e-12;
+  double start_time = 1.3e-12;
+  double stop_time = 163.3e-12;
   double time_step = 0.25e-12;
 
   double reflectivity = 0.75;
@@ -73,9 +74,10 @@ int main(int argc, char *argv[])
        }
     }
 
-
   TransducingLayer transducing_layer(reflectivity, 7.6e-9, 0.91, 2.70, 0.334, 23e-6);
-  PreviousDamagedDiamondModel model;
+  //PreviousDamagedDiamondModel model;
+  UndamagedDiamondModel model;
+  //LagomarsinoDamageModel model;
   ImplantedDiamond material(&model, fluence);
   material.set_transducing_layer(transducing_layer);
   CapSimulation simulation;
