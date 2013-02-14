@@ -12,12 +12,12 @@ class UndamagedDiamondModel : public DamageModelInterface
  public:
   double n(double vacancy_concentration) const
   {
-    return 2.4;
+    return 2.4542;
   }
   
   double kappa(double vacancy_concentration) const
   {
-    return 0.0;
+    return 0.0035;
   }
 
   double p12(double vacancy_concentration) const

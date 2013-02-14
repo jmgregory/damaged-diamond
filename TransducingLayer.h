@@ -8,7 +8,7 @@ class TransducingLayer
 {
  public:
   TransducingLayer() :
-    _reflectivity(0.0), 
+    _reflectivity(0.905), 
     _absorption_length(7.6e-9),
     _mass_specific_heat_capacity(0.91),
     _mass_density(2.70),
