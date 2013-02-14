@@ -27,6 +27,8 @@ double TrimFileVacancyConcentrationCalculator::vacancy_concentration(double dept
   assert(!trim_points.empty());
   if (depth < 0.0) return 0.0;
   if (depth < trim_points[0].depth) return trim_points[0].vacancy_density * _fluence;
+  if (_fluence == 0.0) return 0.0;
+  if (depth > trim_points[trim_points.size()-1].depth) return 0.0;
   for (unsigned int i = 0; i < trim_points.size() - 1; i++)
     {
       if ((depth >= trim_points[i].depth) && (depth < trim_points[i+1].depth))
