@@ -23,16 +23,19 @@ double ImplantedDiamond::speed_of_sound(double z) const
 
 double ImplantedDiamond::p12(double z, double lambda) const
 {
+  if (z < 0) return 0.0;
   return _model->p12(VacancyConcentration(z));
 }
 
 double ImplantedDiamond::n(double z, double lambda) const
 {
+  if (z < 0) return 1.0;
   return _model->n(VacancyConcentration(z));
 }
 
 double ImplantedDiamond::kappa(double z, double lambda) const
 {
+  if (z < 0) return 0.0;
   return _model->kappa(VacancyConcentration(z));
 }
 
