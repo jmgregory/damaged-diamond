@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <string>
+#include <tr1/unordered_map>
 #include "CapMaterialInterface.h"
 
 class ImplantedDiamond : public CapMaterialInterface
@@ -12,6 +13,8 @@ class ImplantedDiamond : public CapMaterialInterface
 
  public:
   ImplantedDiamond(double fluence);
+
+  CapMaterialInterface * clone() const;
   
   double smallest_feature() const;
   double max_interesting_depth() const;

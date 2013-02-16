@@ -48,3 +48,10 @@ TransducingLayer ImplantedDiamond::transducing_layer() const
 {
   return TransducingLayer();
 }
+
+CapMaterialInterface * ImplantedDiamond::clone() const
+{
+  ImplantedDiamond * output = new ImplantedDiamond(_model, _fluence);
+  output->set_transducing_layer(_transducing_layer);
+  return output;
+}
