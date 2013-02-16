@@ -7,6 +7,7 @@
 #include "ImplantedDiamond.h"
 #include "LagomarsinoDamageModel.h"
 #include "UndamagedDiamondModel.h"
+#include "PreviousDamagedDiamondModel.h"
 
 void print_data(const std::vector <CapPoint> & data, std::ostream & out = std::cout);
 std::string to_upper(const std::string &);
@@ -25,6 +26,9 @@ int main(int argc, char *argv[])
   double n = UndamagedDiamondModel().n(0);
   double kappa = UndamagedDiamondModel().kappa(0);
   double p12 = UndamagedDiamondModel().p12(0);
+  double A = PreviousDamagedDiamondModel().A();
+  double B = PreviousDamagedDiamondModel().B();
+  double C = PreviousDamagedDiamondModel().c();
 
   std::stringstream ss;
   int c;
@@ -41,13 +45,16 @@ int main(int argc, char *argv[])
       {"threads",      required_argument, 0, 't'},
       {"n",            required_argument, 0, 'n'},
       {"p12",          required_argument, 0, 'p'},
+      {"A",            required_argument, 0, 'A'},
+      {"B",            required_argument, 0, 'B'},
+      {"c",            required_argument, 0, 'c'},
       {0, 0, 0, 0}
     };
   int option_index = 0;
 
   while (1)
     {
-      c = getopt_long(argc, argv, "f:s:e:i:k:m:R:qt:n:p:", long_options, &option_index);
+      c = getopt_long(argc, argv, "f:s:e:i:k:m:R:qt:n:p:A:B:c:", long_options, &option_index);
       
       if (c == -1)
 	break;
@@ -94,6 +101,15 @@ int main(int argc, char *argv[])
 	case 'p':
 	  ss >> p12;
 	  break;
+	case 'A':
+	  ss >> A;
+	  break;
+	case 'B':
+	  ss >> B;
+	  break;
+	case 'c':
+	  ss >> C;
+	  break;
        	}
     }
 
@@ -102,6 +118,10 @@ int main(int argc, char *argv[])
     model = new UndamagedDiamondModel(n, kappa, p12);
   else if (model_name == "LAGOMARSINO")
     model = new LagomarsinoDamageModel(n, kappa, p12);
+  else if (model_name == "PREVIOUS")
+    {
+      model = new PreviousDamagedDiamondModel(A, B, C, n, kappa);
+    }
   else
     {
       std::cerr << "Error: Unknown damage model: " << model_name << std::endl;
