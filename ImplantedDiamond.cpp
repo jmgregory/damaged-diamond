@@ -3,7 +3,8 @@
 ImplantedDiamond::ImplantedDiamond(DamageModelInterface *model, double fluence)
   : _model(model), 
     _fluence(fluence), 
-    _trim_calculator("1-MeV-He-in-Diamond.dat", _fluence)
+    _trim_calculator("1-MeV-He-in-Diamond.dat", _fluence),
+    _transducing_layer(TransducingLayer())
 { }
 
 double ImplantedDiamond::smallest_feature() const
@@ -13,7 +14,7 @@ double ImplantedDiamond::smallest_feature() const
 
 double ImplantedDiamond::max_interesting_depth() const
 {
-  return 3.51e-6; // m
+  return 2e-6; // m
 }
 
 double ImplantedDiamond::speed_of_sound(double z) const
@@ -51,7 +52,7 @@ void ImplantedDiamond::PrintCustomParameters(std::ostream & out, std::string tag
 
 TransducingLayer ImplantedDiamond::transducing_layer() const
 {
-  return TransducingLayer();
+  return _transducing_layer;
 }
 
 double ImplantedDiamond::VacancyConcentration(double depth) const
@@ -59,8 +60,14 @@ double ImplantedDiamond::VacancyConcentration(double depth) const
   return _trim_calculator.vacancy_concentration(depth);
 }
 
+void ImplantedDiamond::set_transducing_layer(const TransducingLayer & tl)
+{
+  _transducing_layer = tl;
+}
+
 CapMaterialInterface * ImplantedDiamond::clone() const
 {
   ImplantedDiamond * output = new ImplantedDiamond(_model, _fluence);
+  output->set_transducing_layer(_transducing_layer);
   return output;
 }

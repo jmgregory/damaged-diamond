@@ -3,32 +3,41 @@
 
 #include <complex>
 #include <string>
+#include <sstream>
 #include "DamageModelInterface.h"
 
 using std::complex;
 
 class UndamagedDiamondModel : public DamageModelInterface
 {
+ private:
+  double _n, _kappa, _p12;
+ 
  public:
+  
+  UndamagedDiamondModel();
+  UndamagedDiamondModel(double n, double kappa, double p12);
+  
   double n(double vacancy_concentration) const
   {
-    return 2.4542;
+    return _n;
   }
   
   double kappa(double vacancy_concentration) const
   {
-    return 0.0035;
+    return _kappa;
   }
 
   double p12(double vacancy_concentration) const
   {
-    // L. S. Hounsome, R. Jones, M. J. Shaw, and P. R. Briddon, physica status solidi (a), vol. 203, no. 12, pp. 3088-3093 (2006)
-    return 0.032;
+    return _p12;
   }
 
   std::string description() const
   {
-    return "No damage dependence";
+    std::stringstream ss;
+    ss << "No damage dependence, n = " << _n << ", kappa = " << _kappa << ", p12 = " << _p12;
+    return ss.str();
   }
 };
 

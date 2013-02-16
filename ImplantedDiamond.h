@@ -14,6 +14,7 @@ class ImplantedDiamond : public CapMaterialInterface
   DamageModelInterface *_model;
   double _fluence;
   TrimFileVacancyConcentrationCalculator _trim_calculator;
+  TransducingLayer _transducing_layer;
 
   double VacancyConcentration(double depth) const;
   double p12(double z, double lambda) const;
@@ -31,6 +32,7 @@ class ImplantedDiamond : public CapMaterialInterface
   std::string description() const;
   void PrintCustomParameters(std::ostream & out = std::cout, std::string tag = "") const;
   TransducingLayer transducing_layer() const;
+  void set_transducing_layer(const TransducingLayer & tl);
 };
 
 #endif
