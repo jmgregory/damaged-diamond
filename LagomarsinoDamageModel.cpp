@@ -1,3 +1,4 @@
+#include <sstream>
 #include "LagomarsinoDamageModel.h"
 #include "UndamagedDiamondModel.h"
 
@@ -29,6 +30,9 @@ double LagomarsinoDamageModel::p12(double vacancy_concentration) const
 
 std::string LagomarsinoDamageModel::description() const
 {
-  return "Damage model for complex index from Lagomarsino et al Opt. Express 20, 19382 (2012). p12 is same as undamaged diamond";
+  std::stringstream ss;
+  ss << "Damage model for complex index from Lagomarsino et al Opt. Express 20, 19382 (2012), " 
+     << "n = (" << _n0 << " + " << _kappa0 << "i) + (4.34e-23 cm^3 + 2.86e-23i cm^3) * C_V, p12 = " << _p12 << ".";
+  return ss.str();
 }
 
