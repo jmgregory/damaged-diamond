@@ -48,6 +48,7 @@ std::string ImplantedDiamond::description() const
 void ImplantedDiamond::PrintCustomParameters(std::ostream & out, std::string tag) const
 {
   out << tag << "                         Fluence: " << _fluence << " cm-2" << std::endl;
+  out << tag << "                 TRIM Calculator: " << _trim_calculator.description() << std::endl;
 }
 
 TransducingLayer ImplantedDiamond::transducing_layer() const
