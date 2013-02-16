@@ -57,11 +57,16 @@ double CapSimulation::CalculateUnstrainedReflectivity() const
 
 double CapSimulation::StrainPulseDepth(double time_delay) const
 {
+  if (time_delay <= 0.0) return 0.0;
+  
+  return _material->speed_of_sound(0.0) * time_delay;
+  // TODO: Use the full calculation below for materials with variable v_s
+  
   double depth = 0.0;
-  double time_increment = time_delay / 10000.0;
+  double time_increment = time_delay / 1000.0;
   for (double time = 0.0; time <= time_delay; time += time_increment)
     {
-      depth += time_increment * _material->speed_of_sound(depth);
+      depth = depth + time_increment * _material->speed_of_sound(depth);
     }
   return depth;
 }
