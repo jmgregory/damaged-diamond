@@ -15,12 +15,14 @@ class ImplantedDiamond : public CapMaterialInterface
   double _fluence;
   TrimFileVacancyConcentrationCalculator _trim_calculator;
   TransducingLayer _transducing_layer;
+  std::tr1::unordered_map<double,double> * _vacancy_map;
 
   double VacancyConcentration(double depth) const;
   double p12(double z, double lambda) const;
 
  public:
   ImplantedDiamond(DamageModelInterface * model, double fluence);
+  ~ImplantedDiamond();
 
   CapMaterialInterface * clone() const;
   

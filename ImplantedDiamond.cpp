@@ -1,3 +1,4 @@
+#include <tr1/unordered_map>
 #include "ImplantedDiamond.h"
 
 ImplantedDiamond::ImplantedDiamond(DamageModelInterface *model, double fluence)
@@ -5,7 +6,14 @@ ImplantedDiamond::ImplantedDiamond(DamageModelInterface *model, double fluence)
     _fluence(fluence), 
     _trim_calculator("1-MeV-He-in-Diamond.dat", _fluence),
     _transducing_layer(TransducingLayer())
-{ }
+{ 
+  _vacancy_map = new std::tr1::unordered_map<double,double>();
+}
+
+ImplantedDiamond::~ImplantedDiamond()
+{
+  delete _vacancy_map;
+}
 
 double ImplantedDiamond::smallest_feature() const
 {
@@ -58,7 +66,14 @@ TransducingLayer ImplantedDiamond::transducing_layer() const
 
 double ImplantedDiamond::VacancyConcentration(double depth) const
 {
-  return _trim_calculator.vacancy_concentration(depth);
+  std::tr1::unordered_map<double,double>::const_iterator got = _vacancy_map->find(depth);
+  if (got == _vacancy_map->end())
+    {
+      double result = _trim_calculator.vacancy_concentration(depth);
+      _vacancy_map->insert(std::pair<double,double>(depth, result));
+      return result;
+    }
+  return got->second;
 }
 
 void ImplantedDiamond::set_transducing_layer(const TransducingLayer & tl)
