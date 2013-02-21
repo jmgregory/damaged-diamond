@@ -3,10 +3,7 @@
 
 #include <complex>
 #include <string>
-#include <sstream>
 #include "DamageModelInterface.h"
-
-using std::complex;
 
 class UndamagedDiamondModel : public DamageModelInterface
 {
@@ -39,6 +36,26 @@ class UndamagedDiamondModel : public DamageModelInterface
     ss << "No damage dependence, n = " << _n << ", kappa = " << _kappa << ", p12 = " << _p12;
     return ss.str();
   }
+
+  std::string name() const
+    {
+      return "undamaged";
+    }
+
+  unsigned int ParameterCount() const
+  {
+    return 0;
+  }
+
+  std::vector <Parameter> parameters() const
+    {
+      std::vector <Parameter> out;
+      return out;
+    }
+
+  void _set_parameters(const std::vector <double> & new_parameters)
+  {  }
+
 };
 
 #endif

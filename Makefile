@@ -1,7 +1,8 @@
-OBJECTS=TransducingLayer.o Matrix.o CharacteristicMatrix.o HomogeneousCharacteristicMatrix.o LaserBeam.o CapSimulation.o HomogeneousCharacteristicMatrix.o CapMaterialInterface.o ImplantedDiamond.o ThreadedCapSimulationRunner.o TrimFileVacancyConcentrationCalculator.o OliveroDamageModel.o LagomarsinoDamageModel.o UndamagedDiamondModel.o PreviousDamagedDiamondModel.o
+OBJECTS=TransducingLayer.o Matrix.o CharacteristicMatrix.o HomogeneousCharacteristicMatrix.o LaserBeam.o CapSimulation.o HomogeneousCharacteristicMatrix.o CapMaterialInterface.o ImplantedDiamond.o ThreadedCapSimulationRunner.o TrimFileVacancyConcentrationCalculator.o
+MODELS=OliveroDamageModel.o LagomarsinoDamageModel.o UndamagedDiamondModel.o PreviousDamagedDiamondModel.o
 CPPFLAGS=-O3 -Wall -Winvalid-pch
 
-cap-sim: main.cpp $(OBJECTS)
+cap-sim: main.cpp $(OBJECTS) $(MODELS)
 	g++ $(CPPFLAGS) $^ -o $@ -include stdafx.h
 
 CapSimulation.o: CharacteristicMatrix.h HomogeneousCharacteristicMatrix.h DefaultCapMaterial.h LaserBeam.h TransducingLayer.h CapMaterialInterface.h Exception.h
@@ -9,7 +10,7 @@ CharacteristicMatrix.o: Matrix.h
 HomogeneousCharacteristicMatrix.o: CharacteristicMatrix.h Matrix.h
 ImplantedDiamond.o: CapMaterialInterface.h TrimFileVacancyConcentrationCalculator.h TransducingLayer.h
 CapMaterialInterface.o: TransducingLayer.h
-
+%Model.o: DamageModelInterface.h
 
 %.o: %.cpp %.h stdafx.h.gch
 	g++ $(CPPFLAGS) -include stdafx.h -c $< -o $@
