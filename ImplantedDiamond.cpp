@@ -50,13 +50,15 @@ double ImplantedDiamond::kappa(double z, double lambda) const
 
 std::string ImplantedDiamond::description() const
 {
-  return std::string("Implanted diamond sample using damage model: ") + _model->description();
+  return std::string("Implanted diamond sample");
 }
 
 void ImplantedDiamond::PrintCustomParameters(std::ostream & out, std::string tag) const
 {
   out << tag << "                         Fluence: " << _fluence << " cm-2" << std::endl;
   out << tag << "                 TRIM Calculator: " << _trim_calculator.description() << std::endl;
+  out << tag << "                    Damage Model: " << _model->description() << std::endl;
+  _model->print_parameters(out, tag);
 }
 
 TransducingLayer ImplantedDiamond::transducing_layer() const
