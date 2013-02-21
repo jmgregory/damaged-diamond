@@ -1,4 +1,4 @@
-OBJECTS=TransducingLayer.o Matrix.o CharacteristicMatrix.o HomogeneousCharacteristicMatrix.o LaserBeam.o CapSimulation.o HomogeneousCharacteristicMatrix.o CapMaterialInterface.o ImplantedDiamond.o ThreadedCapSimulationRunner.o TrimFileVacancyConcentrationCalculator.o
+OBJECTS=TransducingLayer.o Matrix.o CharacteristicMatrix.o HomogeneousCharacteristicMatrix.o LaserBeam.o CapSimulation.o HomogeneousCharacteristicMatrix.o CapMaterialInterface.o ImplantedDiamond.o ThreadedCapSimulationRunner.o TrimFileVacancyConcentrationCalculator.o DamageModelFactory.o
 MODELS=OliveroDamageModel.o LagomarsinoDamageModel.o UndamagedDiamondModel.o PreviousDamagedDiamondModel.o
 CPPFLAGS=-O3 -Wall -Winvalid-pch
 
@@ -10,6 +10,7 @@ CharacteristicMatrix.o: Matrix.h
 HomogeneousCharacteristicMatrix.o: CharacteristicMatrix.h Matrix.h
 ImplantedDiamond.o: CapMaterialInterface.h TrimFileVacancyConcentrationCalculator.h TransducingLayer.h
 CapMaterialInterface.o: TransducingLayer.h
+DamageModelFactory.o: DamageModelInterface.h $(subst .o,.h,$(MODELS))
 %Model.o: DamageModelInterface.h
 
 %.o: %.cpp %.h stdafx.h.gch
