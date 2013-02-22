@@ -56,6 +56,18 @@ class UndamagedDiamondModel : public DamageModelInterface
   void _set_parameters(const std::vector <double> & new_parameters)
   {  }
 
+  UndamagedDiamondModel * clone() const
+  {
+    UndamagedDiamondModel * out = new UndamagedDiamondModel();
+    std::vector <Parameter> params_all = parameters();
+    std::vector <double> params_values;
+    for (unsigned int i = 0; i < ParameterCount(); i++)
+      {
+	params_values.push_back(params_all[i].value);
+      }
+    out->set_parameters(params_values);
+    return out;
+  }
 };
 
 #endif

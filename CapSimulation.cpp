@@ -200,7 +200,7 @@ CapSimulation * CapSimulation::clone() const
   return output;
 }
 
-void CapSimulation::set_material(CapMaterialInterface * material)
+void CapSimulation::set_material(const CapMaterialInterface * material)
 {
   if (material == NULL)
     {

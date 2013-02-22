@@ -21,6 +21,7 @@ class LagomarsinoDamageModel : public DamageModelInterface
   unsigned int ParameterCount() const;
   std::vector <Parameter> parameters() const;
   void _set_parameters(const std::vector <double> & new_parameters);
+  LagomarsinoDamageModel * clone() const;
 };
 
 #endif

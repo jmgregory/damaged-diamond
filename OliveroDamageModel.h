@@ -20,6 +20,7 @@ class OliveroDamageModel : public DamageModelInterface
   unsigned int ParameterCount() const;
   std::vector <Parameter> parameters() const;
   void _set_parameters(const std::vector <double> & new_parameters);
+  OliveroDamageModel * clone() const;
 };
 
 #endif

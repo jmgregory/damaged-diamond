@@ -23,7 +23,7 @@ class DamageModelInterface
   virtual double p12(double vacancy_concentration) const = 0;
   virtual void _set_parameters(const std::vector <double> & new_parameters) = 0;
   virtual unsigned int ParameterCount() const = 0;
-  //  virtual DamageModelInterface * clone() const = 0;
+  virtual DamageModelInterface * clone() const = 0;
 
   void set_parameters(const std::vector <double> & new_parameters);
   void print_parameters(std::ostream & out = std::cout, std::string tag = "") const;
