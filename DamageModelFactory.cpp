@@ -5,6 +5,7 @@
 #include "OliveroDamageModel.h"
 #include "PreviousDamagedDiamondModel.h"
 #include "UndamagedDiamondModel.h"
+#include "IndependentExponentialModel.h"
 
 DamageModelInterface * DamageModelFactory::GetModelFromString(const std::string & name)
 {
@@ -49,6 +50,7 @@ std::vector <DamageModelInterface *> DamageModelFactory::GetAllModels()
   output.push_back(new OliveroDamageModel());
   output.push_back(new PreviousDamagedDiamondModel());
   output.push_back(new UndamagedDiamondModel());
+  output.push_back(new IndependentExponentialModel());
   return output;
 }
 

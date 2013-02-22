@@ -1,5 +1,5 @@
 OBJECTS=TransducingLayer.o Matrix.o CharacteristicMatrix.o HomogeneousCharacteristicMatrix.o LaserBeam.o CapSimulation.o HomogeneousCharacteristicMatrix.o CapMaterialInterface.o ImplantedDiamond.o ThreadedCapSimulationRunner.o TrimFileVacancyConcentrationCalculator.o DamageModelInterface.o DamageModelFactory.o
-MODELS=OliveroDamageModel.o LagomarsinoDamageModel.o UndamagedDiamondModel.o PreviousDamagedDiamondModel.o
+MODELS=OliveroDamageModel.o LagomarsinoDamageModel.o UndamagedDiamondModel.o PreviousDamagedDiamondModel.o IndependentExponentialModel.o
 CPPFLAGS=-O3 -Wall -Winvalid-pch
 
 .PHONY: all
