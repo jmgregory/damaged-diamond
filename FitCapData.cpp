@@ -38,12 +38,14 @@ struct fit_context
 	      const std::vector <fit_run> & _fit_run_parameters,
 	      const std::vector <Parameter> & _seed,
 	      const std::vector <bool> & _locked_parameters,
-	      bool _use_kappa_0)
+	      bool _use_kappa_0,
+	      double * _lowest_f)
     : model(_model),
       fit_run_parameters(_fit_run_parameters),
       seed(_seed),
       locked_parameters(_locked_parameters),
-      use_kappa_0(_use_kappa_0)
+      use_kappa_0(_use_kappa_0),
+      lowest_f(_lowest_f)
   { }
 
   DamageModelInterface * model;
@@ -51,6 +53,7 @@ struct fit_context
   std::vector <Parameter> seed;
   std::vector <bool> locked_parameters;
   bool use_kappa_0;
+  double * lowest_f;
 };
 
 std::vector <CapPoint> LoadCapDataFromFile(std::string filename);
@@ -104,7 +107,7 @@ int main(int argc, char *argv[])
   double lowest_f = 1e100;
   fit_func.n = free_parameter_count;
   fit_func.f = fit_helper;
-  fit_func.params = new fit_context(model, fit_run_parameters, model->parameters(), locked_parameters, use_kappa_0);
+  fit_func.params = new fit_context(model, fit_run_parameters, model->parameters(), locked_parameters, use_kappa_0, &lowest_f);
   gsl_vector * seed = gsl_vector_alloc(free_parameter_count);
   gsl_vector * step_sizes = gsl_vector_alloc(free_parameter_count);
   unsigned int j = 0;
@@ -120,24 +123,46 @@ int main(int argc, char *argv[])
       j++;
       stop_size += gsl_vector_get(step_sizes, i) * gsl_vector_get(step_sizes, i);
     }  
-  model->print_parameters();
   stop_size /= free_parameter_count;
   stop_size /= 10000.0;
   stop_size = sqrt(stop_size);
-  std::cerr << "Stopping size = " << stop_size << std::endl;
+
+  std::cerr << "Initial Parameters:" << std::endl;
+  model->print_parameters();
+  std::cerr << "Locked parameters:";
+  bool no_locked = true;
+  for (unsigned int i = 0; i < locked_parameters.size(); i++)
+    {
+      if (locked_parameters[i])
+	{
+	  std::cerr << " " << model->parameters()[i].name;
+	  no_locked = false;
+	}
+    }
+  if (no_locked) std::cerr << "(none)";
+  std::cerr << std::endl;
   if (use_kappa_0) std::cerr << "Note: using given values for kappa_0 from the fitting-parameters file, rather than the value from the model." << std::endl;
 
   const gsl_multimin_fminimizer_type *min_type = gsl_multimin_fminimizer_nmsimplex2;
   gsl_multimin_fminimizer * minimizer = gsl_multimin_fminimizer_alloc(min_type, free_parameter_count);
   gsl_multimin_fminimizer_set(minimizer, &fit_func, seed, step_sizes);
-  
+
+  std::cerr << "Starting size = " << gsl_multimin_fminimizer_size(minimizer) << std::endl;
+  std::cerr << "Stopping size = " << stop_size << std::endl;
+
+  double initial_f = 1.0;
   size_t iter = 0;
   int status;
   double size = 0.0;
+  std::stringstream ss;
   do
     {
       iter++;
       status = gsl_multimin_fminimizer_iterate(minimizer);
+      if (iter == 1)
+	{
+	  initial_f = minimizer->fval;
+	}
       
       if (status) 
 	break;
@@ -145,40 +170,31 @@ int main(int argc, char *argv[])
       size = gsl_multimin_fminimizer_size(minimizer);
       status = gsl_multimin_test_size(size, stop_size);
       
+      if (status == GSL_SUCCESS)
+	{
+	  std::cerr << "Converged to minimum at:" << std::endl;
+	}
+      
       std::cerr << "Iteration: " << iter << std::endl;
       model->print_parameters(std::cerr);
-      std::cerr << " f() = " << minimizer->fval << std::endl;
-      std::cerr << " size = " << size << std::endl;
-      std::cerr << std::endl;
+      std::cerr << " f() = " << minimizer->fval << " (" << (initial_f - minimizer->fval) / initial_f * 100 << "% total improvement)" << std::endl;
+      std::cerr << " size = " << size << " (stop at " << stop_size << ")" << std::endl;
       std::cerr << model->name();
       for (unsigned int i = 0; i < model->ParameterCount(); i++)
 	{
 	  std::cerr << " " << model->parameters()[i].value;
 	}
       std::cerr << std::endl;
-      system("gnuplot ./plot-sim-output.gp");
-
-      if (status == GSL_SUCCESS)
-	{
-	  std::cerr << "Converged to minimum at:" << std::endl;
-	}
       if (use_kappa_0) std::cerr << "Note: using given values for kappa_0 from the fitting-parameters file, rather than the value from the model." << std::endl;
+      std::cerr << std::endl;
       
+      ss.clear();
+      ss.str("");
+      ss << "./do-fit-plot.sh " << iter;
+      system(ss.str().c_str());
     }
   while (status == GSL_CONTINUE && iter < 1000);
 
-  std::cerr << "Iteration: " << iter << std::endl;
-  model->print_parameters(std::cerr);
-  std::cerr << " f() = " << minimizer->fval << std::endl;
-  std::cerr << " size = " << size << std::endl;
-  std::cerr << std::endl;
-  std::cerr << model->name();
-  for (unsigned int i = 0; i < model->ParameterCount(); i++)
-    {
-      std::cerr << " " << model->parameters()[i].value;
-    }
-  std::cerr << std::endl;
-  
   gsl_vector_free(seed);
   gsl_vector_free(step_sizes);
   gsl_multimin_fminimizer_free(minimizer);
@@ -192,6 +208,8 @@ double fit_helper(const gsl_vector *params, void *con)
   std::vector <bool> locked_parameters = context->locked_parameters;
   std::vector <fit_run> fit_run_parameters = context->fit_run_parameters;
   bool use_kappa_0 = context->use_kappa_0;
+  double * lowest_f = context->lowest_f;
+  DamageModelInterface * model_backup = context->model;
   std::vector <double> these_params;
   unsigned int j = 0;
   for (unsigned int i = 0; i < locked_parameters.size(); i++)
@@ -210,14 +228,15 @@ double fit_helper(const gsl_vector *params, void *con)
   ImplantedDiamond * material;
   CapSimulation * simulation;
   ThreadedCapSimulationRunner * runner;
-  std::vector <CapPoint> sim_points;
-  std::vector <CapPoint> exp_points;
+  std::vector < std::vector <CapPoint> > sim_points;
+  std::vector < std::vector <CapPoint> > exp_points;
   double sum = 0.0;
   double diff;
   std::stringstream ss;
+  std::vector <std::string> runner_parameter_outputs;
   for (unsigned int run = 0; run < fit_run_parameters.size(); run++)
     {
-      exp_points = LoadCapDataFromFile(fit_run_parameters[run].experimental_file);
+      exp_points.push_back(LoadCapDataFromFile(fit_run_parameters[run].experimental_file));
 
       if (use_kappa_0)
 	{
@@ -240,42 +259,56 @@ double fit_helper(const gsl_vector *params, void *con)
       runner->set_time_delays((fit_run_parameters[run].start_time - fit_run_parameters[run].correction_shift) * 1e-12,
 			     (fit_run_parameters[run].stop_time - fit_run_parameters[run].correction_shift) * 1e-12,
 			     fit_run_parameters[run].time_step * 1e-12);
-      sim_points = runner->Run();      
+      sim_points.push_back(runner->Run());
       ss.str("");
       ss.clear();
       runner->PrintParameters(ss, "# ");
+      runner_parameter_outputs.push_back(ss.str());
+
       delete runner;
       delete simulation;
       delete material;
 
-      scale_horizontal(&sim_points, 1e12);
-      shift_horizontal(&sim_points, fit_run_parameters[run].correction_shift);
-      remove_offset(&sim_points);
+      scale_horizontal(&(sim_points[run]), 1e12);
+      shift_horizontal(&(sim_points[run]), fit_run_parameters[run].correction_shift);
+      remove_offset(&(sim_points[run]));
         
-      WriteData(exp_points, sim_points, fit_run_parameters[run].simulation_file, ss.str());
-
-      if (sim_points.size() != exp_points.size())
+      if (sim_points[run].size() != exp_points[run].size())
 	{
 	  std::cerr << "Error: different numbers of points between " 
 		    << fit_run_parameters[run].experimental_file << " and simulation output (see " 
 		    << fit_run_parameters[run].simulation_file << ")" << std::endl;
 	  exit(1);
 	}
-      for (unsigned int i = 0; i < sim_points.size(); i++)
+      for (unsigned int i = 0; i < sim_points[run].size(); i++)
 	{
-       	  if ((abs(sim_points[i].time_delay - exp_points[i].time_delay) / sim_points[i].time_delay) > 0.0001)
+       	  if ((abs(sim_points[run][i].time_delay - exp_points[run][i].time_delay) / sim_points[run][i].time_delay) > 0.0001)
 	    {
-	      std::cerr << "Warning: time delays " << sim_points[i].time_delay << " and " 
-			<< exp_points[i].time_delay << " don't match up for " 
+	      std::cerr << "Warning: time delays " << sim_points[run][i].time_delay << " and " 
+			<< exp_points[run][i].time_delay << " don't match up for " 
 			<< fit_run_parameters[run].experimental_file << std::endl;
 	    }
-	  if (sim_points[i].time_delay >= fit_run_parameters[run].early_cutoff)
+	  if (sim_points[run][i].time_delay >= fit_run_parameters[run].early_cutoff)
 	    {
-	      diff = sim_points[i].reflectivity - exp_points[i].reflectivity;
+	      diff = sim_points[run][i].reflectivity - exp_points[run][i].reflectivity;
 	      sum += diff * diff;
 	    }
 	}
     }
+
+  if (sum < (*lowest_f))
+    {
+      (*lowest_f) = sum;
+      for (unsigned int run = 0; run < fit_run_parameters.size(); run++)
+	{
+	  WriteData(exp_points[run], sim_points[run], fit_run_parameters[run].simulation_file, runner_parameter_outputs[run]);
+	}
+    }
+  else
+    {
+      context->model = model_backup;
+    }
+
   return sum;
 }
 
