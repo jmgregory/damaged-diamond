@@ -3,13 +3,16 @@ MODELS=OliveroDamageModel.o LagomarsinoDamageModel.o UndamagedDiamondModel.o Pre
 CPPFLAGS=-O3 -Wall -Winvalid-pch
 
 .PHONY: all
-all: cap-sim FitCapData
+all: cap-sim FitCapData PrintModelOutput
 
 cap-sim: main.cpp $(OBJECTS) $(MODELS)
 	g++ $(CPPFLAGS) $^ -o $@ -include stdafx.h
 
 FitCapData: FitCapData.cpp $(OBJECTS) $(MODELS)
 	g++ $(CPPFLAGS) -I/opt/local/include `gsl-config --libs` $^ -o $@ -include stdafx.h
+
+PrintModelOutput: PrintModelOutput.cpp DamageModelInterface.o DamageModelFactory.o $(MODELS)
+	g++ $(CPPFLAGS) $^ -o $@ -include stdafx.h
 
 CapSimulation.o: CharacteristicMatrix.h HomogeneousCharacteristicMatrix.h DefaultCapMaterial.h LaserBeam.h TransducingLayer.h CapMaterialInterface.h Exception.h
 CharacteristicMatrix.o: Matrix.h
