@@ -2,8 +2,14 @@ OBJECTS=TransducingLayer.o Matrix.o CharacteristicMatrix.o HomogeneousCharacteri
 MODELS=OliveroDamageModel.o LagomarsinoDamageModel.o UndamagedDiamondModel.o PreviousDamagedDiamondModel.o
 CPPFLAGS=-O3 -Wall -Winvalid-pch
 
+.PHONY: all
+all: cap-sim FitCapData
+
 cap-sim: main.cpp $(OBJECTS) $(MODELS)
 	g++ $(CPPFLAGS) $^ -o $@ -include stdafx.h
+
+FitCapData: FitCapData.cpp $(OBJECTS) $(MODELS)
+	g++ $(CPPFLAGS) -I/opt/local/include `gsl-config --libs` $^ -o $@ -include stdafx.h
 
 CapSimulation.o: CharacteristicMatrix.h HomogeneousCharacteristicMatrix.h DefaultCapMaterial.h LaserBeam.h TransducingLayer.h CapMaterialInterface.h Exception.h
 CharacteristicMatrix.o: Matrix.h
