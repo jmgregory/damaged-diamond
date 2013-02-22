@@ -37,17 +37,20 @@ struct fit_context
   fit_context(DamageModelInterface * _model,
 	      const std::vector <fit_run> & _fit_run_parameters,
 	      const std::vector <Parameter> & _seed,
-	      const std::vector <bool> & _locked_parameters)
+	      const std::vector <bool> & _locked_parameters,
+	      bool _use_kappa_0)
     : model(_model),
       fit_run_parameters(_fit_run_parameters),
       seed(_seed),
-      locked_parameters(_locked_parameters)
+      locked_parameters(_locked_parameters),
+      use_kappa_0(_use_kappa_0)
   { }
 
   DamageModelInterface * model;
   std::vector <fit_run> fit_run_parameters;
   std::vector <Parameter> seed;
   std::vector <bool> locked_parameters;
+  bool use_kappa_0;
 };
 
 std::vector <CapPoint> LoadCapDataFromFile(std::string filename);
@@ -64,14 +67,26 @@ void WriteData(const std::vector <CapPoint> & exp_points, const std::vector <Cap
 
 int main(int argc, char *argv[])
 {
-  if (argc != 2)
+  if ((argc != 2 && argc != 3) || (argc == 3 && std::string(argv[1]) != "--kappa"))
     {
-      std::cerr << "Usage: " << argv[0] << " \"model parameter1 parameter2 ...\"" << std::endl;
-      std::cerr << "Place an L before a parameter to lock its value" << std::endl;
+      std::cerr << "Usage: " << argv[0] << " [--kappa] \"<model> <parameter1> <parameter2> ...\"" << std::endl;
+      std::cerr << "Place an 'L' before a parameter to lock its value" << std::endl;
+      std::cerr << "The --kappa option causes the fit to use kappa_0 values from the fit parameter file, rather than the given kappa_0 parameter." << std::endl;
       exit(1);
     }
 
-  std::string model_string = argv[1];
+  std::string model_string;
+  bool use_kappa_0;
+  if (argc == 3)
+    {
+      use_kappa_0 = true;
+      model_string = argv[2];
+    }
+  else
+    {
+      use_kappa_0 = false;
+      model_string = argv[1];
+    }
   std::vector <bool> locked_parameters = process_locked_parameters(&model_string);
   DamageModelInterface * model = DamageModelFactory::ParseCommandLine(model_string);
   std::vector <fit_run> fit_run_parameters = load_params_file("fitting-params.dat");
@@ -86,9 +101,10 @@ int main(int argc, char *argv[])
 	}
     }
 
+  double lowest_f = 1e100;
   fit_func.n = free_parameter_count;
   fit_func.f = fit_helper;
-  fit_func.params = new fit_context(model, fit_run_parameters, model->parameters(), locked_parameters);
+  fit_func.params = new fit_context(model, fit_run_parameters, model->parameters(), locked_parameters, use_kappa_0);
   gsl_vector * seed = gsl_vector_alloc(free_parameter_count);
   gsl_vector * step_sizes = gsl_vector_alloc(free_parameter_count);
   unsigned int j = 0;
@@ -109,6 +125,8 @@ int main(int argc, char *argv[])
   stop_size /= 10000.0;
   stop_size = sqrt(stop_size);
   std::cerr << "Stopping size = " << stop_size << std::endl;
+  if (use_kappa_0) std::cerr << "Note: using given values for kappa_0 from the fitting-parameters file, rather than the value from the model." << std::endl;
+
   const gsl_multimin_fminimizer_type *min_type = gsl_multimin_fminimizer_nmsimplex2;
   gsl_multimin_fminimizer * minimizer = gsl_multimin_fminimizer_alloc(min_type, free_parameter_count);
   gsl_multimin_fminimizer_set(minimizer, &fit_func, seed, step_sizes);
@@ -144,6 +162,7 @@ int main(int argc, char *argv[])
 	{
 	  std::cerr << "Converged to minimum at:" << std::endl;
 	}
+      if (use_kappa_0) std::cerr << "Note: using given values for kappa_0 from the fitting-parameters file, rather than the value from the model." << std::endl;
       
     }
   while (status == GSL_CONTINUE && iter < 1000);
@@ -172,6 +191,7 @@ double fit_helper(const gsl_vector *params, void *con)
   fit_context * context = (fit_context *)con;
   std::vector <bool> locked_parameters = context->locked_parameters;
   std::vector <fit_run> fit_run_parameters = context->fit_run_parameters;
+  bool use_kappa_0 = context->use_kappa_0;
   std::vector <double> these_params;
   unsigned int j = 0;
   for (unsigned int i = 0; i < locked_parameters.size(); i++)
@@ -186,7 +206,6 @@ double fit_helper(const gsl_vector *params, void *con)
 	  j++;
 	}
     }
-  context->model->set_parameters(these_params);
 
   ImplantedDiamond * material;
   CapSimulation * simulation;
@@ -199,6 +218,18 @@ double fit_helper(const gsl_vector *params, void *con)
   for (unsigned int run = 0; run < fit_run_parameters.size(); run++)
     {
       exp_points = LoadCapDataFromFile(fit_run_parameters[run].experimental_file);
+
+      if (use_kappa_0)
+	{
+	  for (unsigned int i = 0; i < context->seed.size(); i++)
+	    {
+	      if (context->seed[i].name == "kappa_0")
+		{
+		  these_params[i] = context->fit_run_parameters[run].kappa_0;
+		}
+	    }
+	  context->model->set_parameters(these_params);
+	}
 
       material = new ImplantedDiamond(context->model, fit_run_parameters[run].fluence);
       material->set_transducing_layer(TransducingLayer(fit_run_parameters[run].reflectivity, 7.6e-9, 0.91, 2.70, 0.334, 23e-6));
